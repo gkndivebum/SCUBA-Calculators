@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html" charset="ISO-8859-1">
+<title>Open Circuit Technical Dive Planner</title>
+<link rel="shortcut icon" href="favicon.ico">
+<script src="scripts/GasMix.js" language="javascript"></script>
+<script src="scripts/cylinder.js" language="javascript"></script>
+<script src="scripts/TechDivePlanner.js" language="javascript"></script>
+</head>
+<body onLoad="Init()">
+<h3>Open Circuit Technical Dive Planner</h3>
+<label for="MaxDepth">Max Depth </label>
+<input name="maxDepth" id="MaxDepth" type=text size=3 maxlength=3 onChange="processMaxDepth(this)">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="nominal">Nominal Ascent </label>
+<input type="checkbox" id="nominal" name="nominal" value=1 onChange="nominalAscent()">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="defaultGasses">Default Gasses </label>
+<input type="checkbox" id="defaultGasses" name="defaultGasses" value=1 onChange="populateDefaultGasses(this)">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" id="resetButton" name="resetButton" value="Reset" onClick="reset()">
+<br><br>
+<label for="BottomTime">Bottom Time </label>
+<input name="BottomTime" id="BottomTime" type=text size=3 maxlength=3 value="20" onChange="processBottomTime(this)">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="DescentRate">Descent Rate </label>
+<input name="DescentRate" id="DescentRate" type=text size=3 maxlength=3 value="30" onChange="verifyNumber(this, 5, 100, 0)">
+&nbsp;<i>ft/min</i>&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="diveSCR">Dive SCR </label>
+<input name="diveSCR" id="diveSCR" type=text size=4 maxlength=4 value="0.5" onChange="verifyNumber(this, 0.2, 3.0, 1)">
+&nbsp;<i>ft&sup3;/min</i>&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="decoSCR">Deco SCR </label>
+<input name="decoSCR" id="decoSCR" type=text size=4 maxlength=4 value="0.5" onChange="verifyNumber(this, 0.2, 3.0, 1)">
+&nbsp;<i>ft&sup3;/min</i>&nbsp;&nbsp;&nbsp;&nbsp;
+<br><br>
+Gas rule:&nbsp;&nbsp;All&nbsp;<input type="radio" name="GasRule[]" id="AllUseable" value="All" checked onChange="divePlan()">&nbsp;&nbsp;
+Half&nbsp;<input type="radio" name="GasRule[]" id="HalfUseable" value="Half" onChange="divePlan()">&nbsp;&nbsp;
+Thirds&nbsp;<input type="radio" name="GasRule[]" id="ThirdUseable" value="Thirds" onChange="divePlan()">&nbsp;&nbsp;
+<br><br>
+<label for="TTS">Run Time </label>
+<input type="text" name="TTS" id="TTS" size=3 maxlength=3 readonly>&nbsp;&nbsp;
+<label for="descentTime">Descent Time </label>
+<input type="text" name="descentTime" id="descentTime" size=3 maxlength=3 readyonly>&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="ascentTime">Ascent Time </label>
+<input type="text" name="ascentTime" id="ascentTime" size=3 maxlength=3 readonly>&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="neededGasCF">Estimated Gas Needed: </label>
+<input type=text name="neededGasCF" id="neededGasCF" size=5 maxlength=5 readonly>&nbsp;&nbsp;<i>ft&sup3;</i>
+<br><br>
+<label for="CNS">CNS: </label>
+<input type=text name="CNS" id="CNS" size=5 maxlength=5 redonly>&nbsp;%&nbsp;&nbsp;
+<label for="OTUs">OTUs: </label>
+<input type=text name="OTUs" id="OTUs" size=5 maxlength=5 redonly>&nbsp;&nbsp;&nbsp;&nbsp;
+<br><br>
+<table border=1 cellpadding=0 cellspacing=0 style="empty-cells:show" id="theTable" name="theTable">
+<thead>
+<col style="width:40px"><col style="width:50px"><col style="width:50px"><col style="width:50px"><col style="width:80px"><col style="width:80px"><col style="width:80px"><col style="width:50px"><col style="width:50px"><col style="width:60px"><col style="width:50px">
+<th>ATA</th><th>Depth</th><th>Stop time</th><th>Run time</th><th>Gas ft&sup3;</th><th>Reserve ft&sup3;</th><th>Mix</th><th>PO<sub>2</sub></th><th>END</th><th>% CNS</th><th>OTUs</th>
+</thead>
+<tbody id="addRowsHere">
+</tbody>
+</table>
+<br>
+<small><i>Assumes 30 ft/min ascent to first stop, 10 ft/min ascent to surface. Run time is arriving at a given stop. Bottom gas requirements include descent.</i></small>
+<br><br>
+<table border=0 cellpadding=0 cellspacing=20>
+<tr>
+<td>
+<label for="newMix">Add Mix </label>
+<input type="text" size=8 maxLength=12 id="mixTextInput" onChange="addMix(this)">
+</td>
+<td>
+<table border=1 cellpadding=0 cellspacing=0 style="empty-cells:show" id="theGasMixTable" name="theGasMixTable">
+<thead>
+<col style="width:80px"><col style="width:60px">
+<th>Mix</th><th>ft&sup3;</th>
+</thead>
+<tbody id="addGassesHere">
+</tbody>
+</table>
+</td>
+</tr>
+</table>
+<br><br>
+<table border=0 cellpadding=0 cellspacing=20>
+<tr>
+<td>
+<input type="button" name="newCyl" id="newCyl" value="Add Cylinder" onClick='addCylinder("Stage", true)'>
+</td>
+<td>
+<table border=1 cellpadding=0 cellspacing=0 style='empty-cells:show' cellpadding=0 cellspacing=0 id="theCylinderTable" name="theCylinderTable">
+<thead>
+<col style='width:100px'><col style='width:50px'><col style='width:50px'><col style='width:50px'><col style='width:60px;border-collapse:collapse;border-style:none;empty-cells:hide'>
+<th>Cylinder</th><th>Mix</th><th>Fill pressure</th><th>Reserve pressure</th>
+</thead>
+<tbody id="addCylindersHere">
+</tbody>
+</table>
+</td>
+</tr>
+</table>
+<br><br>
+</body>
+</html>
