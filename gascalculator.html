@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Gas Used Calculator</title>
+<link rel="shortcut icon" href="favicon.ico">
+<script src="scripts/cylinder.js" language="javascript"></script>
+<script src="scripts/GasMix.js" language="javascript"></script>
+<script src="scripts/paypal-button.min.js" language="javascript"></script>
+<script src="scripts/sprintf.min.js" language="javascript"></script>
+<script src="scripts/gascalculator.js" language="javascript"></script>
+</head>
+<body onLoad="Init(theForm)">
+<form name="theForm" id="theForm" method="post" action="#">
+<table border=0 cellpadding=0 cellspacing=0 id="depthTime" name="depthTime" style="display:none;">
+<tr>
+<td>Average Depth: <input type="text" name="avgDepth" id="avgDepth" size=5 maxlength=5 onChange="verifyInt(this)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>Dive Time: <input type="text" name="diveTime" id="diveTime" size=5 maxlength=5 onChange="verifyTime(this)">
+</tr>
+</table><br>
+<table border=0 cellpadding=0 cellspacing=0 id="costs" name="costs" style="display:none;">
+<tr>
+<td>Oxygen: <input type="text" name="costO2" id="costO2" size=4 maxlength=4 onChange="verifyCost(this, 0.10, 5.00)"><small><i>per ft&sup3;</i></small>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>Helium: <input type="text" name="costHe" id="costHe" size=4 maxlength=4 onChange="verifyCost(this, 0.50, 10.00)"><small><i>per ft&sup3;</i></small>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>Grade &quot;E&quot;(<small><i>Modified</i></small>) Air: <input type="text" name="costAir" id="costAir" size=4 maxlength=4 onChange="verifyCost(this, 0.01, 1.50)"><small><i>per ft&sup3;</i></small>&nbsp;&nbsp;</td>
+</tr>
+</table><br>
+<table border=0 cellpadding=0 cellspacing=0 id="cyls" name="cyls">
+<tr>
+<td>Cylinder: <select name="cylSelect[ ]" id="cylSelect" onChange="gasUse(this)"><option value="none">----------</option></select>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>&Delta; PSI: <input type="text" name="deltaPSI[ ]" id="deltaPSI" size=4 maxlength=4 onChange="verifyInt(this)">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td style="display:none;">Mix: <input type="text" name="mix[ ]" id="mix" size=7 maxlength=7 onChange="verifyMix(this)"></td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;<span id="gasuse[ ]"></span></td>
+</tr>
+</table>
+<br><input type="button" value="Calculate" name="calc" id="calc" onClick="gasUse()">&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" value="Add Cylinder" name="addCyl" id="addCyl" onClick="addCylinder(cyls)">&nbsp;&nbsp;&nbsp;&nbsp;
+<span id="bdSpan" style="display:none;"><input type="checkbox" name="showBreakdown" id="showBreakdown" onChange="gasUse()"> <small>Show mix details</small></span>
+</form>
+<div id="scrResults"></div>
+<br>
+<div id="GasResults"></div>
+<br>
+<div id="PayPal"></div>
+</body>
+</html>
