@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html" charset="ISO-8859-1">
+<title>Oxygen Exposure Calculator (OTU/CNS)</title>
+<link rel="shortcut icon" href="favicon.ico">
+</head>
+<body onLoad="theForm.diveTime.focus()">
+<h3>Oxygen Exposure Calculator</h3>
+<script language="JavaScript">
+// Oxygen Exposure (CNS/OTUs) Calculator
+//
+// Copyright (c) 2014-2017 - Opua Enterprises LLC.  All rights reserved.
+//
+// gkn@opua.org
+
+// Parse and validate a time value
+
+function parseTime(value)
+{
+  if (!value)
+    return(-1);
+  var timeStr = value.toUpperCase().replace(";", ":");
+  var hrsmin = "";
+
+  // hrs: min
+
+  hrsmin = timeStr.split(":");
+  if (hrsmin.length > 1) {
+    var hrs = parseInt(hrsmin[0], 10);
+    var min = parseInt(hrsmin[1], 10);
+    if (hrs < 0 || hrs > 10 || min < 0 || min > 59)
+      return(-1);
+    else return ((hrs * 60) + min);
+  } else {
+
+    // nnH or nnnD for hours and days
+
+    var lastChar = timeStr.toUpperCase().charAt(timeStr.length - 1);
+
+    if (lastChar == "H")
+      return(parseInt(timeStr, 10) * 60);
+    else if (lastChar == "D")
+      return(parseInt(timeStr, 10) * 60*24);
+    else
+
+      // Straight up minutes
+
+      return(parseInt(timeStr, 10));
+  }
+}
+
+// Compute oxygen exposure
+
+function computeOTU(form)
+{
+  var percentCNS = Array(0.14, 0.18, 0.22, 0.28, 0.33, 0.42, 0.48, 0.56, 0.67, 0.83, 2.22);
+  var CNS = 0.0, OTUs = 0.0, totalOTUs = 0.0;
+
+  if (autoCalculated) {
+    form.SI.focus();
+    return;
+  }
+
+  var diveTime = parseTime(form.diveTime.value);
+  if (isNaN(diveTime) || diveTime < 0 || diveTime > 1440) {
+    alert("Please enter a valid dive time");
+    form.diveTime.value = "";
+    form.diveTime.focus();
+    return;
+  }
+
+  OTUs = Math.pow(((2.0 * parseFloat(form.po2.value)) - 1.0), 0.833) * diveTime;
+  if (form.totalOTUs.value)
+    totalOTUs = parseFloat(form.totalOTUs.value)
+  totalOTUs += OTUs;
+  form.totalOTUs.value = totalOTUs.toFixed(1);
+
+  if (form.residualCNS.value)
+    CNS = parseFloat(form.residualCNS.value);
+
+  CNS += percentCNS[form.po2.selectedIndex] * diveTime;
+
+  form.OTUs.value = OTUs.toFixed(1);
+  form.CNS.value  = CNS.toFixed(1);
+  form.SI.value = null;
+  form.SI.focus();
+  return;
+}
+
+// Compute residiual CNS exposure (surface interval changed)
+
+function computeResidualCNS(form)
+{
+  autoCalculated = false;
+
+  var CNS = 0.0;
+  var SI = parseTime(form.SI.value);
+  if (isNaN(SI) || SI <= 0) {
+    alert("Please enter a valid surface interval");
+    form.SI.value = ""
+    form.SI.focus();
+    return;
+  }
+
+  CNS = parseFloat(form.CNS.value);
+  if (!isNaN(CNS)) {
+    CNS *= Math.exp(-0.0077 * SI);
+    form.residualCNS.value = CNS.toFixed(1);
+    form.diveTime.value = "";
+    form.OTUs.value = "";
+    form.CNS.value = "";
+    form.diveTime.focus();
+  }
+  return;
+}
+
+// Automatically calculate the OTUs if we've entered a surface interval and
+// a dive time and PO2.
+
+var autoCalculated = false;
+
+function autoCalculate(form)
+{
+  if (form.diveTime.value && form.residualCNS.value) {
+    computeOTU(form);
+    autoCalculated = true;
+  }
+  return;
+}
+
+// Reset
+
+function clearForm(form)
+{
+  form.diveTime.value = "";
+  form.po2.selectedIndex = findSelectIndex(form.po2, "1.3");
+  form.OTUs.value = "";
+  form.CNS.value = "";
+  form.SI.value ="";
+  form.totalOTUs.value = "";
+  form.residualCNS.value = "";
+  form.diveTime.focus();
+  autoCalculated = false;
+  return;
+}
+
+// Find the proper select index for a given input and string
+
+function findSelectIndex(input, string)
+{
+  var index = 0;
+  for (var i, j = 0; i = input.options[j]; j++) {
+    if (i.value == string) {
+      index = j;
+      break;
+    }
+  }
+  return(index);
+}
+</script>
+<form name="theForm">
+<table  border=0 cellpadding=0 cellspacing=0>
+<tr>
+<td align=right>Dive Time: <input type="text" name="diveTime" size=5 maxlength=5 onChange="autoCalculate(theForm)"/></td>
+<td align=right>PO<sub>2</sub>:&nbsp;<select name="po2" >
+	<option value="0.6">0.6</option>
+	<option value="0.7">0.7</option>
+	<option value="0.8">0.8</option>
+	<option value="0.9">0.9</option>
+	<option value="1.0">1.0</option>
+	<option value="1.1">1.1</option>
+	<option value="1.2">1.2</option>
+	<option selected value="1.3">1.3</option>
+	<option value="1.4">1.4</option>
+	<option value="1.5">1.5</option>
+	<option value="1.6">1.6</option>
+    </select></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td align=right>Surface Interval:&nbsp;<input type="text" name="SI" size="6" maxlength="6" onChange="computeResidualCNS(theForm)" /></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td align=right>OTUs: <input type="text" name="OTUs" size=6 maxlength=6 readonly /></td>
+<td align=right>CNS %:<input type="text" name="CNS" size=5 maxlength=5 readonly /></td>
+</tr>
+<tr>
+<td align=right>Total OTUs: <input type="text" name="totalOTUs" size=6 maxlength=6 readonly /></td>
+<td align=right>Residual CNS %:<input type="text" name="residualCNS" size=5 maxlength=5 readonly /></td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<p>
+<input type="button" name="calculate" label="Calculate" value="Calculate" onClick="computeOTU(theForm)" />
+<input type="button" name="resetform" label="Reset" value="Reset" onClick="clearForm(theForm)" />
+</p>
+</form>
+</body>
+</html>

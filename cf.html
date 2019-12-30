@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Cylinder (Tank) Factor Calculator</title>
+<link rel="shortcut icon" href="favicon.ico">
+<script src="scripts/cylinder.js" language="javascript"></script>
+<script language="javascript">
+function cfInit()
+{
+  var el = document.getElementById("cylSelect");
+  var descr = "";
+
+  // Populate the select options
+
+  for (var key in Cylinders) {
+    descr = Cylinders[key].Description + " (" + 
+            Cylinders[key].Volume.toFixed(1) + " ft3 at " + 
+            Cylinders[key].Pressure.toFixed() + " PSI)";
+    el.add(new Option(descr, key, null));
+  }
+  return;
+}
+
+function cfDisplay()
+{
+  var el = document.getElementById("cylSelect");
+  var span = document.getElementById("results");
+  if (el.selectedIndex > 0) {
+    var cyl = Cylinders[el[el.selectedIndex].value];
+    span.innerHTML = "Cylinder Factor = <b>" + cyl.tankFactor.toFixed(1) +
+                      "</b> <small>(" + (cyl.Pressure / cyl.Volume).toFixed(2) +
+                      " PSI per <i>ft&sup3;</i></small>)";
+  } else
+    span.innerHTML = "";
+  return;
+}
+
+function cfCheckUserInput(input)
+{
+  if (input.value) {
+    var vol = parseFloat(input.value);
+    if (isNaN(vol) || vol <= 0.0) {
+      input.value = "";
+      input.select();
+      input.focus();
+    } else
+      cfUser();
+  }
+  return;
+}
+
+function cfUser()
+{
+  var uVel = document.getElementById("userVolume");
+  var uPel = document.getElementById("userPressure");
+  var uSpan = document.getElementById("userResults");
+
+  var Vol = parseFloat(uVel.value);
+  var Press = parseFloat(uPel.value);
+
+  if (!isNaN(Vol) && !isNaN(Press)) {
+    uSpan.innerHTML = "Cylinder Factor = <b>" +
+                      ((Vol / Press) * 100.0).toFixed(1) +
+                      "</b> <small>(" + (Press / Vol).toFixed(2) +
+                      " PSI per <i>ft&sup3;</i></small>)";
+  } else
+    uSpan.innerHTML = "";
+  return;
+}
+</script>
+</head>
+<body onLoad="cfInit()">
+<table border=0 cellspacing=0 cellpadding=0>
+<tr>
+<td>Cylinder: <select name="cylSelect" id="cylSelect" onChange="cfDisplay()"><option value="none">----------</option></select></td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;<span id="results"></span></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Your Cylinder:&nbsp;&nbsp;&nbsp;&nbsp;Volume <input type="text" name="userVolume" id="userVolume" size=5 maxlength=5 onChange="cfCheckUserInput(this)">
+&nbsp;&nbsp;Pressure <input type="text" name="userPressure" id="userPressure" size=6 maxlength=6 onChange="cfCheckUserInput(this)"></td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;<span id="userResults"></span></td>
+<tr>
+</table>
+<br><br><i><small>[The Cylinder Factor (CF) is the number of ft&sup3; per 100 PSIG]</small></i>
+</body>
+</html>
