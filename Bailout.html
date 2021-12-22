@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html" charset="ISO-8859-1">
+<title>CCR Bailout Gas Volume Calculator</title>
+<link rel="shortcut icon" href="favicon.ico">
+<script src="scripts/GasMix.js" language="javascript"></script>
+<script src="scripts/Bailout.js" language="javascript"></script>
+</head>
+<body onLoad="Init()">
+<h3>CCR Bailout Gas Volume Calculator</h3>
+<label for="MaxDepth">Max Depth </label>
+<input name="maxDepth" id="MaxDepth" type=text size=3 maxlength=3 onChange="processMaxDepth(this)">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="nominal">Nominal Ascent </label>
+<input type="checkbox" id="nominal" name="nominal" value=1 onChange="nominalAscent()">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="defaultGasses">Default Gasses </label>
+<input type="checkbox" id="defaultGasses" name="defaultGasses" value=1 onChange="populateDefaultGasses(this)">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" id="resetButton" name="resetButton" value="Reset" onClick="reset()">
+<br><br>
+<label for="ProbTime">Problem Resolution Time </label>
+<input name="ProbTime" id="ProbTime" type=text size=2 maxlength=2 value="1" onChange="verifyNumber(this, 1, 10, 0)">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="SCR">Emergency SCR </label>
+<input name="SCR" id="SCR" type=text size=4 maxlength=4 value="1.0" onChange="verifyNumber(this, 0.2, 5.0, 1)">
+&nbsp;<i>ft&sup3;/min</i>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br><br>
+<label for="TTS">TTS </label>
+<input type="text" name="TTS" id="TTS" size=3 maxlength=3 readonly>&nbsp;&nbsp;
+<label for="ascentTime">Ascent Time </label>
+<input type="text" name="ascentTime" id="ascentTime" size=3 maxlength=3 readonly>&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="bailoutGasCF">Estimated Bailout Gas Needed: </label>
+<input type=text name="bailoutGasCF" id="bailoutGasCF" size=5 maxlength=5 readonly>&nbsp;&nbsp;<i>ft&sup3;</i>
+<br><br>
+<label for="CNS">CNS: </label>
+<input type=text name="CNS" id="CNS" size=5 maxlength=5 redonly>&nbsp;%&nbsp;&nbsp;
+<label for="OTUs">OTUs: </label>
+<input type=text name="OTUs" id="OTUs" size=5 maxlength=5 redonly>&nbsp;&nbsp;&nbsp;&nbsp;
+<br><br>
+<table border=1 cellpadding=0 cellspacing=0 style="empty-cells:show" id="theTable" name="theTable">
+<thead>
+<col style="width:40px"><col style="width:50px"><col style="width:50px"><col style="width:50px"><col style="width:50px"><col style="width:80px"><col style="width:50px"><col style="width:50px"><col style="width:60px"><col style="width:50px">
+<th>ATA</th><th>Depth</th><th>Stop time</th><th>Run time</th><th>ft&sup3;</th><th>Mix</th><th>PO<sub>2</sub></th><th>END</th><th>% CNS</th><th>OTUs</th>
+</thead>
+<tbody id="addRowsHere">
+</tbody>
+</table>
+<br>
+<small><i>Assumes 30 ft/min ascent to first stop, 10 ft/min ascent to surface. Run time is arriving at a given stop</i></small>
+<br><br>
+<table style="border-style:none;padding:0px;border-spacing:20px">
+<tr>
+<td>
+<label for="newMix">Add Mix </label>
+<input type="text" size=8 maxLength=12 id="mixTextInput" onChange="addMix(this)">
+</td>
+<td>
+<table border=1 cellpadding=0 cellspacing=0 style="empty-cells:show" id="theGasMixTable" name="theGasMixTable">
+<thead>
+<col style="width:80px"><col style="width:60px">
+<th>Mix</th><th>ft&sup3;</th>
+</thead>
+<tbody id="addGassesHere">
+</tbody>
+</table>
+</td>
+</tr>
+</table>
+<br><br>
+</body>
+</html>
