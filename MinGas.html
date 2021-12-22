@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html" charset="ISO-8859-1">
+<title>Minimum Gas Calculator</title>
+<link rel="shortcut icon" href="favicon.ico">
+<script src="scripts/cylinder.js" language="javascript"></script>
+<script src="scripts/MinGas.js" language="javascript"></script>
+</head>
+<body onLoad="Init()">
+<h3>Minimum Gas Reserve Calculator</h3>
+<label for="MaxDepth">Max Depth </label>
+<input name="maxDepth" id="MaxDepth" type=text size=3 maxlength=3 onChange="processMaxDepth(this)">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="Cylinder">Cylinder </label>
+<select name="Cylinder" id="Cylinder" onChange="minGas()">
+<option value="">----------</option>
+</select>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="FillPressure">Fill Pressure </label>
+<input type=text name="FillPressure" id="FillPressure" size=4 maxlength=4 onChange="processFillPressure(this, Cylinder)">
+<br><br>
+<label for="ProbTime">Problem Resolution Time </label>
+<input name="ProbTime" id="ProbTime" type=text size=2 maxlength=2 value="1" onChange="verifyNumber(this, 1, 10, 0)">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="SCR">Emergency SCR </label>
+<input name="SCR" id="SCR" type=text size=4 maxlength=4 value="1.0" onChange="verifyNumber(this, 0.2, 2.0, 1)">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="minDecoCB">Min Deco </label>
+<input type="checkbox" name="minDecoCB" id="minDecoCB" value=1 checked onChange="processMinDeco()">
+<br><br>
+<label for="TTS">TTS </label>
+<input type="text" name="TTS" id="TTS" size=3 maxlength=3 readonly>&nbsp;&nbsp;
+<label for="ascentTime">Ascent Time </label>
+<input type="text" name="ascentTime" id="ascentTime" size=3 maxlength=3 readonly>&nbsp;&nbsp;&nbsp;&nbsp;
+Minimum Gas:&nbsp;&nbsp;<label for="minGasCF">ft&sup3; </label>
+<input type=text name="minGasCF" id="minGasCF" size=5 maxlength=5 readonly>&nbsp;&nbsp;
+<label for="minGasPSI">PSI </label>
+<input type=text name="minGasPSI" id="minGasPSI" size=4 maxlength=4 readonly>
+<br><br>
+Gas Rule:&nbsp;
+<input type="radio" name="GasRule[]" id="AllUseable" value="All" onChange="turnPressure(this, TP)">&nbsp;All
+&nbsp;&nbsp;<input type="radio" name="GasRule[]" id="Half" value="Half" onChange="turnPressure(this, TP)">&nbsp;Half
+&nbsp;&nbsp;<input type="radio" name="GasRule[]" id="Thirds" value="Thirds" onChange="turnPressure(this, TP)">&nbsp;Thirds
+&nbsp;&nbsp;&nbsp;&nbsp;<label for="TP" id="tpId">Turn Pressure </label>
+<input type=text name="TP" id="TP" size=4 maxlength=4 readonly>
+<br><br>
+<table border=1 cellpadding=0 cellspacing=0 id="theTable" name="theTable">
+<thead>
+<col width=40><col width=50><col width=40><col width=50><col width=50>
+<th>ATA</th><th>Depth</th><th>Time</th><th>ft&sup3;</th><th>PSI</th>
+</thead>
+<tbody id="addRowsHere">
+</tbody>
+</table>
+<br><br>
+<small><i>Assumes 30 ft/min ascent to first stop, 10 ft/min ascent to surface</i></small>
+<br><br>
+<div id="Warning"></div>
+</body>
+</html>
